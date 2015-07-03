@@ -16,14 +16,15 @@ namespace Intertech.Validation.Converters
             return IsMatch<RegularExpressionAttribute>(attr);
         }
 
-        public void Convert(string propertyName, CustomAttributeData attr, StringBuilder jsonString, bool isFirstAttr, string resourceNamespace, string resourceAssemblyName)
+        public Dictionary<string, object> Convert(string propertyName, CustomAttributeData attr, string resourceNamespace, string resourceAssemblyName)
         {
             var pattern = GetConstructorArgumentValue(attr, 0);
             if (!string.IsNullOrWhiteSpace(pattern))
             {
-                SetRegularExpressionAAValidation(propertyName, attr, jsonString, isFirstAttr,
+                return SetRegularExpressionAAValidation(propertyName, attr,
                     pattern, DataAnnotationConstants.DefaultRegexErrorMsg, resourceNamespace, resourceAssemblyName);
             }
+            return new Dictionary<string, object>();
         }
     }
 }

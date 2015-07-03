@@ -16,11 +16,11 @@ namespace Intertech.Validation.Converters
             return IsMatch<RequiredAttribute>(attr);
         }
 
-        public void Convert(string propertyName, CustomAttributeData attr, StringBuilder jsonString, bool isFirstAttr, string resourceNamespace, string resourceAssemblyName)
+        public Dictionary<string, object> Convert(string propertyName, CustomAttributeData attr, string resourceNamespace, string resourceAssemblyName)
         {
-            PrependComma(jsonString, isFirstAttr);
+            var validations = new Dictionary<string, object>();
 
-            jsonString.Append("required: true");
+            validations.Add("required", true);
 
             var displayName = GetNamedArgumentValue(propertyName, attr, DataAnnotationConstants.Display);
             if (!string.IsNullOrWhiteSpace(displayName))
@@ -30,8 +30,9 @@ namespace Intertech.Validation.Converters
                 {
                     msg = string.Format(DataAnnotationConstants.DefaultRequiredErrorMsg, displayName);
                 }
-                jsonString.Append(", 'required-msg': \"" + msg + "\"");
+                validations.Add("required-msg", msg);
             }
+            return validations;
         }
     }
 }

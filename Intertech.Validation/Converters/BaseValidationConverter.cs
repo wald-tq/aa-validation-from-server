@@ -25,17 +25,6 @@ namespace Intertech.Validation.Converters
         }
 
         /// <summary>
-        /// Prepend a comma on the jsonString based on isFirstAttr.
-        /// </summary>
-        /// <param name="jsonString"></param>
-        /// <param name="isFirstAttr"></param>
-        protected void PrependComma(StringBuilder jsonString, bool isFirstAttr)
-        {
-            if (!isFirstAttr)
-                jsonString.Append(", ");
-        }
-
-        /// <summary>
         /// Get a constructor argument at the given index from the given attribute.
         /// </summary>
         /// <param name="attr"></param>
@@ -118,12 +107,12 @@ namespace Intertech.Validation.Converters
             return msg;
         }
 
-        protected void SetRegularExpressionAAValidation(string propertyName, CustomAttributeData attr, StringBuilder jsonString, bool isFirstAttr,
+        protected Dictionary<string, object> SetRegularExpressionAAValidation(string propertyName, CustomAttributeData attr,
             string regex, string defaultMsgFormat, string resourceNamespace = null, string resourceAssemblyName = null)
         {
-            PrependComma(jsonString, isFirstAttr);
+            var validations = new Dictionary<string, object>();
 
-            jsonString.Append("'ng-pattern': \"/" + RegexConstants.GetRegularExpressionForJson(regex) + "/\"");
+            validations.Add("ng-pattern", "/" + regex + "/");
 
             var displayName = GetNamedArgumentValue(propertyName, attr, DataAnnotationConstants.Display);
             if (!string.IsNullOrWhiteSpace(displayName))
@@ -133,16 +122,16 @@ namespace Intertech.Validation.Converters
                 {
                     msg = string.Format(defaultMsgFormat, displayName);
                 }
-                jsonString.Append(", 'ng-pattern-msg': \"" + msg + "\"");
+                validations.Add("ng-pattern-msg", msg);
             }
+            return validations;
         }
 
-        protected void SetMaxLengthAAValidation(string propertyName, CustomAttributeData attr, StringBuilder jsonString, bool isFirstAttr,
+        protected Dictionary<string, object> SetMaxLengthAAValidation(string propertyName, CustomAttributeData attr,
             string length, string resourceNamespace = null, string resourceAssemblyName = null)
         {
-            PrependComma(jsonString, isFirstAttr);
-
-            jsonString.Append("'ng-maxlength': " + length);
+            var validations = new Dictionary<string, object>();
+            validations.Add("ng-maxlength", length);
 
             var displayName = GetNamedArgumentValue(propertyName, attr, DataAnnotationConstants.Display);
             if (!string.IsNullOrWhiteSpace(displayName))
@@ -152,16 +141,18 @@ namespace Intertech.Validation.Converters
                 {
                     msg = string.Format(DataAnnotationConstants.DefaultMaxLengthErrorMsg, displayName, length);
                 }
-                jsonString.Append(", 'ng-maxlength-msg': \"" + msg + "\"");
+                validations.Add("ng-maxlength-msg", msg);
             }
+            return validations;
         }
 
-        protected void SetMinLengthAAValidation(string propertyName, CustomAttributeData attr, StringBuilder jsonString, bool isFirstAttr,
+        protected Dictionary<string, object> SetMinLengthAAValidation(string propertyName, CustomAttributeData attr,
             string length, string resourceNamespace = null, string resourceAssemblyName = null)
         {
-            PrependComma(jsonString, isFirstAttr);
 
-            jsonString.Append("'ng-minlength': " + length);
+            var validations = new Dictionary<string, object>();
+
+            validations.Add("ng-minlength", length);
 
             var displayName = GetNamedArgumentValue(propertyName, attr, DataAnnotationConstants.Display);
             if (!string.IsNullOrWhiteSpace(displayName))
@@ -171,8 +162,9 @@ namespace Intertech.Validation.Converters
                 {
                     msg = string.Format(DataAnnotationConstants.DefaultMinLengthErrorMsg, displayName, length);
                 }
-                jsonString.Append(", 'ng-minlength-msg': \"" + msg + "\"");
+                validations.Add("ng-minlength-msg", msg);
             }
-        }
+            return validations;
+         }
     }
 }

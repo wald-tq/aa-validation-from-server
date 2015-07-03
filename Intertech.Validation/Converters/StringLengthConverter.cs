@@ -16,19 +16,25 @@ namespace Intertech.Validation.Converters
             return IsMatch<StringLengthAttribute>(attr);
         }
 
-        public void Convert(string propertyName, CustomAttributeData attr, StringBuilder jsonString, bool isFirstAttr, string resourceNamespace, string resourceAssemblyName)
+        public Dictionary<string, object> Convert(string propertyName, CustomAttributeData attr, string resourceNamespace, string resourceAssemblyName)
         {
+            var validations = new Dictionary<string, object>();
+
             var maxLength = GetConstructorArgumentValue(attr, 0);
             if (!string.IsNullOrWhiteSpace(maxLength))
             {
-                SetMaxLengthAAValidation(propertyName, attr, jsonString, isFirstAttr, maxLength, resourceNamespace, resourceAssemblyName);
+                var maxValidations = SetMaxLengthAAValidation(propertyName, attr, maxLength, resourceNamespace, resourceAssemblyName);
+                validations = validations.Concat(maxValidations).ToDictionary(x => x.Key, x => x.Value);
             }
 
             var minLength = base.GetNamedArgumentValue(propertyName, attr, DataAnnotationConstants.MinimumLength, false);
             if (!string.IsNullOrWhiteSpace(minLength))
             {
-                SetMinLengthAAValidation(propertyName, attr, jsonString, false, minLength, resourceNamespace, resourceAssemblyName);
+                var minValidations = SetMinLengthAAValidation(propertyName, attr, minLength, resourceNamespace, resourceAssemblyName);
+                validations = validations.Concat(minValidations).ToDictionary(x => x.Key, x => x.Value);
             }
+
+            return validations;
         }
     }
 }

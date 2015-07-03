@@ -16,16 +16,9 @@ namespace Intertech.Validation
         {
             DtoObjectName = dtoObjectName;
             JsonObjectName = jsonObjectName;
-
-            JsonString = new StringBuilder("{ validations: {");
         }
 
-        public void CompleteJsonString()
-        {
-            JsonString.Append("} }");
-        }
-
-        public StringBuilder JsonString { get; set; }
+        public object ValidationObject { get; set; }
 
         public string DtoObjectName { get; set; }
 

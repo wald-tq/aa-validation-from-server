@@ -73,11 +73,7 @@ namespace Intertech.Validation
             if (parms == null)
                 throw new ArgumentNullException("parms", "Expecting GetValidationParms in GetValidations call and they were not supplied.");
 
-            GetValidationsForDto(parms);
-
-            parms.CompleteJsonString();
-
-            return JObject.Parse(parms.JsonString.ToString());
+            return GetValidationsForDto(parms);
         }
 
         #region Private Methods
@@ -103,9 +99,11 @@ namespace Intertech.Validation
         /// This function iterates over the properties of the Dto and adds the validation attributes to the
         /// JsonString.
         /// </summary>
-        private void GetValidationsForDto(GetValidationsParms parms)
+        private object GetValidationsForDto(GetValidationsParms parms)
         {
-            parms.JsonString.Append(parms.JsonObjectName + ": { ");
+            var modelValidations = new Dictionary<string, object>();
+            
+            //parms.JsonString.Append(parms.JsonObjectName + ": { ");
 
             var dtoClass = TypeHelper.GetObjectType(parms.DtoObjectName, false, parms.DtoAlternateNamespace, parms.DtoAssemblyNames.ToArray());
             if (dtoClass == null)
@@ -117,47 +115,29 @@ namespace Intertech.Validation
             var properties = dtoClass.GetProperties();
             if (properties != null)
             {
-                var isFirstProp = true;
-
                 foreach (var prop in properties)
                 {
+                    var propertyValidations = new Dictionary<string, object>();
+
                     if (prop.CustomAttributes != null && prop.CustomAttributes.Count() > 0)
                     {
-                        var attrStr = new StringBuilder();
-                        var isFirstAttr = true;
-
                         foreach (var attr in prop.CustomAttributes)
                         {
                             var converter = _converters.FirstOrDefault(vc => vc.IsAttributeMatch(attr));
                             if (converter != null)
                             {
-                                converter.Convert(prop.Name, attr, attrStr, isFirstAttr, parms.ResourceNamespace, parms.ResourceAssemblyName);
-                                isFirstAttr = false;
+                                var ret = converter.Convert(prop.Name, attr, parms.ResourceNamespace, parms.ResourceAssemblyName);
+                                propertyValidations = propertyValidations.Concat(ret).ToDictionary(x => x.Key, x => x.Value);
                             }
                         }
 
-                        if (!isFirstAttr)
-                        {
-                            var sep = isFirstProp ? string.Empty : ",";
-
-							if (parms.UseCamelCaseForProperties)
-							{
-								parms.JsonString.Append(sep + CamelCaseProperty(prop.Name) + ": { ");
-							}
-							else
-							{
-                                parms.JsonString.Append(sep + prop.Name + ": { ");
-							}
-                            parms.JsonString.Append(attrStr.ToString());
-                            parms.JsonString.Append("}");
-
-                            isFirstProp = false;
-                        }
                     }
+                    modelValidations.Add(prop.Name, propertyValidations);
                 }
             }
+            parms.ValidationObject = new { validations = new Dictionary<string, object>() { { parms.JsonObjectName, modelValidations } } };
 
-            parms.JsonString.Append("}");
+            return parms.ValidationObject;
         }
 
 		private string CamelCaseProperty(string input)

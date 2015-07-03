@@ -16,15 +16,16 @@ namespace Intertech.Validation.Converters
             return IsMatch<RangeAttribute>(attr);
         }
 
-        public void Convert(string propertyName, CustomAttributeData attr, StringBuilder jsonString, bool isFirstAttr, string resourceNamespace, string resourceAssemblyName)
+        public Dictionary<string, object> Convert(string propertyName, CustomAttributeData attr, string resourceNamespace, string resourceAssemblyName)
         {
-            PrependComma(jsonString, isFirstAttr);
-
+            var validations = new Dictionary<string, object>();
+            
             var minimum = GetConstructorArgumentValue(attr, 0);
             var maximum = GetConstructorArgumentValue(attr, 1);
+            
             if (!string.IsNullOrWhiteSpace(minimum) && !string.IsNullOrWhiteSpace(maximum))
             {
-                jsonString.Append("'min': " + minimum);
+                validations.Add("min", minimum);
 
                 var displayName = base.GetNamedArgumentValue(propertyName, attr, DataAnnotationConstants.Display);
                 if (!string.IsNullOrWhiteSpace(displayName))
@@ -34,12 +35,13 @@ namespace Intertech.Validation.Converters
                     {
                         msg = string.Format(DataAnnotationConstants.DefaultRangeErrorMsg, displayName, minimum, maximum);
                     }
-                    jsonString.Append(", 'min-msg': \"" + msg + "\"");
+                    validations.Add("min-msg", msg);
 
-                    jsonString.Append(", 'max': " + maximum);
-                    jsonString.Append(", 'max-msg': \"" + msg + "\"");
+                    validations.Add("max", maximum);
+                    validations.Add("max-msg", msg);
                 }
             }
+            return validations;
         }
     }
 }

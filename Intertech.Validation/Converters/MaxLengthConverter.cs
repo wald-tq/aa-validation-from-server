@@ -5,6 +5,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using Intertech.Validation.Constants;
 
 namespace Intertech.Validation.Converters
 {
@@ -15,13 +16,13 @@ namespace Intertech.Validation.Converters
             return IsMatch<MaxLengthAttribute>(attr);
         }
 
-        public void Convert(string propertyName, CustomAttributeData attr, StringBuilder jsonString, bool isFirstAttr, string resourceNamespace, string resourceAssemblyName)
+        public Dictionary<string, object> Convert(string propertyName, CustomAttributeData attr, string resourceNamespace, string resourceAssemblyName)
         {
+            var validations = new Dictionary<string, object>();
+
             var length = GetConstructorArgumentValue(attr, 0);
-            if (!string.IsNullOrWhiteSpace(length))
-            {
-                SetMaxLengthAAValidation(propertyName, attr, jsonString, isFirstAttr, length, resourceNamespace, resourceAssemblyName);
-            }
+
+            return SetMaxLengthAAValidation(propertyName, attr, length, resourceNamespace, resourceAssemblyName);
         }
     }
 }

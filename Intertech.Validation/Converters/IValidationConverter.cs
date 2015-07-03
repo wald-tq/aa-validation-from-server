@@ -11,6 +11,6 @@ namespace Intertech.Validation.Converters
     {
         bool IsAttributeMatch(CustomAttributeData attr);
 
-        void Convert(string propertyName, CustomAttributeData attr, StringBuilder jsonString, bool isFirstAttr, string resourceNamespace, string resourceAssemblyName);
+        Dictionary<string, object> Convert(string propertyName, CustomAttributeData attr, string resourceNamespace, string resourceAssemblyName);
     }
 }

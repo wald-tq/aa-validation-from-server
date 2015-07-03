@@ -16,9 +16,9 @@ namespace Intertech.Validation.Converters
             return IsMatch<CreditCardAttribute>(attr);
         }
 
-        public void Convert(string propertyName, CustomAttributeData attr, StringBuilder jsonString, bool isFirstAttr, string resourceNamespace, string resourceAssemblyName)
+        public Dictionary<string, object> Convert(string propertyName, CustomAttributeData attr, string resourceNamespace, string resourceAssemblyName)
         {
-            SetRegularExpressionAAValidation(propertyName, attr, jsonString, isFirstAttr,
+            return SetRegularExpressionAAValidation(propertyName, attr,
                 RegexConstants.CreditCard, DataAnnotationConstants.DefaultCreditCardErrorMsg, resourceNamespace, resourceAssemblyName);
         }
     }
