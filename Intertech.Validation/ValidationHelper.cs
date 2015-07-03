@@ -1,13 +1,9 @@
-﻿using System;
+﻿using Intertech.Validation.Converters;
+using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
-using System.Reflection;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-using Intertech.Validation.Converters;
-using System.Globalization;
 
 namespace Intertech.Validation
 {
@@ -102,8 +98,6 @@ namespace Intertech.Validation
         private object GetValidationsForDto(GetValidationsParms parms)
         {
             var modelValidations = new Dictionary<string, object>();
-            
-            //parms.JsonString.Append(parms.JsonObjectName + ": { ");
 
             var dtoClass = TypeHelper.GetObjectType(parms.DtoObjectName, false, parms.DtoAlternateNamespace, parms.DtoAssemblyNames.ToArray());
             if (dtoClass == null)
