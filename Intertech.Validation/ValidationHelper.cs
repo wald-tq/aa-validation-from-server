@@ -99,6 +99,10 @@ namespace Intertech.Validation
             return registrations.AsEnumerable<Type>();
         }
 
+        /// <summary>
+        /// This function iterates over the properties of the Dto and adds the validation attributes to the
+        /// JsonString.
+        /// </summary>
         private void GetValidationsForDto(GetValidationsParms parms)
         {
             parms.JsonString.Append(parms.JsonObjectName + ": { ");
