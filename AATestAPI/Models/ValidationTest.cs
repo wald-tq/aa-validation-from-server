@@ -1,4 +1,5 @@
 ﻿using Intertech.Validation.Constants;
+using Intertech.Validation;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -38,5 +39,8 @@ namespace AATestAPI.Models
 
         [StringLength(10, MinimumLength = 2)]
         public string StringLengthTest { get; set; }
+
+        [ValidateSubclass]
+        public Submodel Address { get; set; }
     }
 }

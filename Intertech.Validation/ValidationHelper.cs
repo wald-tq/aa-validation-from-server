@@ -47,29 +47,72 @@ namespace Intertech.Validation
         /// <param name="jsonObjectName"></param>
         /// <param name="assemblyNames">Names of assemblies to check</param>
         /// <returns></returns>
-        public object GetValidations(string dtoObjectName, string jsonObjectName, string alternateNamespace, bool useCamelCaseForProperties, params string[] assemblyNames)
+        public object GetValidations(string dtoObjectName, string alternateNamespace, params string[] assemblyNames)
         {
-            var parms = new GetValidationsParms(dtoObjectName, jsonObjectName)
+            var parms = new GetValidationsParms(dtoObjectName, "validations")
             {
                 DtoAlternateNamespace = alternateNamespace,
                 DtoAssemblyNames = new List<string>(assemblyNames),
-                UseCamelCaseForProperties = useCamelCaseForProperties
             };
 
             return GetValidations(parms);
         }
 
         /// <summary>
-        /// Get the validations for the given parms.
+        /// This function iterates over the properties of the Dto and adds the validation attributes to the
+        /// JsonString.
         /// </summary>
-        /// <param name="parms"></param>
-        /// <returns></returns>
-        public object GetValidations(GetValidationsParms parms)
+        public Dictionary<string, object> GetValidations(GetValidationsParms parms)
         {
             if (parms == null)
                 throw new ArgumentNullException("parms", "Expecting GetValidationParms in GetValidations call and they were not supplied.");
 
-            return GetValidationsForDto(parms);
+            var modelValidations = new Dictionary<string, object>();
+
+            var dtoClass = TypeHelper.GetObjectType(parms.DtoObjectName, false, parms.DtoAlternateNamespace, parms.DtoAssemblyNames.ToArray());
+            if (dtoClass == null)
+            {
+                var message = string.Format("DTO '{0}' not found.", parms.DtoObjectName);
+                throw new Exception(message);
+            }
+
+            var properties = dtoClass.GetProperties();
+            if (properties != null)
+            {
+                foreach (var prop in properties)
+                {
+                    var propertyValidations = new Dictionary<string, object>();
+
+                    if (prop.CustomAttributes != null && prop.CustomAttributes.Count() > 0)
+                    {
+                        var validateSubclassProp = Attribute.IsDefined(prop, typeof(ValidateSubclass));
+                        if(validateSubclassProp)
+                        {
+                            var nextParms = new GetValidationsParms(parms);
+                            nextParms.DtoObjectName = prop.PropertyType.Name;
+                            nextParms.JsonObjectName = prop.Name;
+
+                            modelValidations = modelValidations.Concat(GetValidations(nextParms)).ToDictionary(x => x.Key, x => x.Value);
+                        }
+
+                        foreach (var attr in prop.CustomAttributes)
+                        {
+                            var converter = _converters.FirstOrDefault(vc => vc.IsAttributeMatch(attr));
+                            if (converter != null)
+                            {
+                                var ret = converter.Convert(prop.Name, attr, parms.ResourceNamespace, parms.ResourceAssemblyName);
+                                propertyValidations = propertyValidations.Concat(ret).ToDictionary(x => x.Key, x => x.Value);
+                            }
+                        }
+
+                    }
+                    if (propertyValidations.Count > 0)
+                    {
+                        modelValidations.Add(prop.Name, propertyValidations);
+                    }
+                }
+            }
+            return new Dictionary<string, object>(){{parms.JsonObjectName, modelValidations}};
         }
 
         #region Private Methods
@@ -90,78 +133,6 @@ namespace Intertech.Validation
 
             return registrations.AsEnumerable<Type>();
         }
-
-        /// <summary>
-        /// This function iterates over the properties of the Dto and adds the validation attributes to the
-        /// JsonString.
-        /// </summary>
-        private object GetValidationsForDto(GetValidationsParms parms)
-        {
-            var modelValidations = new Dictionary<string, object>();
-
-            var dtoClass = TypeHelper.GetObjectType(parms.DtoObjectName, false, parms.DtoAlternateNamespace, parms.DtoAssemblyNames.ToArray());
-            if (dtoClass == null)
-            {
-                var message = string.Format("DTO '{0}' not found.", parms.DtoObjectName);
-                throw new Exception(message);
-            }
-
-            var properties = dtoClass.GetProperties();
-            if (properties != null)
-            {
-                foreach (var prop in properties)
-                {
-                    var propertyValidations = new Dictionary<string, object>();
-
-                    if (prop.CustomAttributes != null && prop.CustomAttributes.Count() > 0)
-                    {
-                        foreach (var attr in prop.CustomAttributes)
-                        {
-                            var converter = _converters.FirstOrDefault(vc => vc.IsAttributeMatch(attr));
-                            if (converter != null)
-                            {
-                                var ret = converter.Convert(prop.Name, attr, parms.ResourceNamespace, parms.ResourceAssemblyName);
-                                propertyValidations = propertyValidations.Concat(ret).ToDictionary(x => x.Key, x => x.Value);
-                            }
-                        }
-
-                    }
-                    modelValidations.Add(prop.Name, propertyValidations);
-                }
-            }
-            parms.ValidationObject = new { validations = new Dictionary<string, object>() { { parms.JsonObjectName, modelValidations } } };
-
-            return parms.ValidationObject;
-        }
-
-		private string CamelCaseProperty(string input)
-		{
-			if (string.IsNullOrEmpty(input) || !char.IsUpper(input[0]))
-			{
-				return input;
-			}
-
-			var sb = new StringBuilder();
-
-			for (var i = 0; i < input.Length; ++i)
-			{
-				var flag = i + 1 < input.Length;
-				if (i == 0 || !flag || char.IsUpper(input[i + 1]))
-				{
-					var ch = char.ToLower(input[i], CultureInfo.InvariantCulture);
-					sb.Append(ch);
-				}
-				else
-				{
-					sb.Append(input.Substring(i));
-					break;
-				}
-			}
-
-			return sb.ToString();
-		}
-
-
 
         #endregion Private Methods
     }

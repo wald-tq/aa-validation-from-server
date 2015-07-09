@@ -8,10 +8,26 @@ namespace Intertech.Validation
     /// </summary>
     public class GetValidationsParms
     {
+        public GetValidationsParms() { }
+
         public GetValidationsParms(string dtoObjectName, string jsonObjectName)
         {
             DtoObjectName = dtoObjectName;
             JsonObjectName = jsonObjectName;
+        }
+
+        /// <summary>
+        /// Basically a copy-constructor
+        /// </summary>
+        public GetValidationsParms(GetValidationsParms p)
+        {
+            this.ValidationObject = p.ValidationObject;
+            this.DtoObjectName = p.DtoObjectName;
+            this.JsonObjectName = p.JsonObjectName;
+            this.DtoAlternateNamespace = p.DtoAlternateNamespace;
+            this.DtoAssemblyNames = p.DtoAssemblyNames;
+            this.ResourceNamespace = p.ResourceNamespace;
+            this.ResourceAssemblyName = p.ResourceAssemblyName;
         }
 
         public object ValidationObject { get; set; }
@@ -27,7 +43,5 @@ namespace Intertech.Validation
         public string ResourceNamespace { get; set; }
 
         public string ResourceAssemblyName { get; set; }
-
-        public bool UseCamelCaseForProperties { get; set; }
     }
 }

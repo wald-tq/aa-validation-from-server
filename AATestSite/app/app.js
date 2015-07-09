@@ -4,10 +4,8 @@
     angular.module('app', [
         'ui.router',
         'ui.bootstrap',
+        'tqFormExtensions',
         'aa.formExtensions',
-        'aa.formExternalConfiguration',
-        'aa.notify',
-        'aa.select2'
     ])
     .config(['$stateProvider', function ($stateProvider) {
         $stateProvider.state('aatest', {

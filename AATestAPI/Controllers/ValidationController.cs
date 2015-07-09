@@ -17,8 +17,7 @@ namespace AATestAPI.Controllers
         public IHttpActionResult GetValidations(string dtoObjectName, string jsonObjectName)
         {
             var valHelper = new ValidationHelper();
-            object jsonObject = valHelper.GetValidations(dtoObjectName, jsonObjectName,
-                "AATestAPI.Models", false, "AATestAPI");
+            object jsonObject = valHelper.GetValidations(dtoObjectName, "AATestAPI.Models", "AATestAPI");
 
             return Ok(jsonObject);
         }
