@@ -143,5 +143,3 @@ The controller now can inject validationData since it was resolved in the router
 ## Contributing
 
 See file [development.md](development.md) for more infos on the project structure.
-
-TODO: What are the guidelines for contributions?
