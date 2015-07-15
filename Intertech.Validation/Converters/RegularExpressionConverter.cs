@@ -12,13 +12,12 @@ namespace Intertech.Validation.Converters
             return IsMatch<RegularExpressionAttribute>(attr);
         }
 
-        public Dictionary<string, object> Convert(string propertyName, CustomAttributeData attr, string resourceNamespace, string resourceAssemblyName)
+        public Dictionary<string, object> Convert(string propertyName, CustomAttributeData attr)
         {
             var pattern = GetConstructorArgumentValue(attr, 0);
             if (!string.IsNullOrWhiteSpace(pattern))
             {
-                return SetRegularExpressionAAValidation(propertyName, attr,
-                    pattern, DataAnnotationConstants.DefaultRegexErrorMsg, resourceNamespace, resourceAssemblyName);
+                return SetRegularExpressionAAValidation(propertyName, attr, pattern);
             }
             return new Dictionary<string, object>();
         }

@@ -8,6 +8,8 @@ namespace Intertech.Validation.Converters
 {
     public class BaseValidationConverter
     {
+        public static List<IErrorMessageFormatter> _errorMessageFormatter;
+
         /// <summary>
         /// Does the given attribute match the type T passed in?
         /// </summary>
@@ -74,38 +76,21 @@ namespace Intertech.Validation.Converters
         /// <param name="propertyName"></param>
         /// <param name="attr"></param>
         /// <returns></returns>
-        protected string GetErrorMessage(string propertyName, CustomAttributeData attr, string resourceNamespace, string resourceAssemblyName)
+        protected string GetErrorMessage(string propertyName, CustomAttributeData attr)
         {
-            // First see if the ErrorMessage property is there.
-            var msg = GetNamedArgumentValue(propertyName, attr, DataAnnotationConstants.ErrorMessage, false);
-            if (string.IsNullOrWhiteSpace(msg))
+            foreach (var a in _errorMessageFormatter)
             {
-                var resourceName = GetNamedArgumentValue(propertyName, attr, DataAnnotationConstants.ErrorMessageResourceName, false);
-                if (!string.IsNullOrWhiteSpace(resourceName))
+                var msg = a.FormatErrorMessage(propertyName, attr);
+                if (!String.IsNullOrEmpty(msg))
                 {
-                    var resourceTypeStr = GetNamedArgumentValue(propertyName, attr, DataAnnotationConstants.ErrorMessageResourceType, false);
-                    if (!string.IsNullOrWhiteSpace(resourceTypeStr))
-                    {
-                        // Get the message from the resource.
-                        try
-                        {
-                            var rtype = TypeHelper.GetObjectType(resourceTypeStr, true, resourceNamespace, resourceAssemblyName);
-                            var resName = rtype.GetProperty(resourceName, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static);
-                            msg = resName.GetValue(null) as string;
-                        }
-                        catch
-                        {
-                            msg = null;
-                        }
-                    }
+                    return msg;
                 }
             }
-
-            return msg;
+            return null;
         }
 
         protected Dictionary<string, object> SetRegularExpressionAAValidation(string propertyName, CustomAttributeData attr,
-            string regex, string defaultMsgFormat, string resourceNamespace = null, string resourceAssemblyName = null)
+            string regex)
         {
             var validations = new Dictionary<string, object>();
 
@@ -114,12 +99,11 @@ namespace Intertech.Validation.Converters
             var displayName = GetNamedArgumentValue(propertyName, attr, DataAnnotationConstants.Display);
             if (!string.IsNullOrWhiteSpace(displayName))
             {
-                var msg = GetErrorMessage(propertyName, attr, resourceNamespace, resourceAssemblyName);
-                if (string.IsNullOrWhiteSpace(msg))
+                var msg = GetErrorMessage(propertyName, attr);
+                if(msg != null)
                 {
-                    msg = string.Format(defaultMsgFormat, displayName);
+                    validations.Add("ng-pattern-msg", msg);
                 }
-                validations.Add("ng-pattern-msg", msg);
             }
             return validations;
         }
@@ -133,18 +117,17 @@ namespace Intertech.Validation.Converters
             var displayName = GetNamedArgumentValue(propertyName, attr, DataAnnotationConstants.Display);
             if (!string.IsNullOrWhiteSpace(displayName))
             {
-                var msg = GetErrorMessage(propertyName, attr, resourceNamespace, resourceAssemblyName);
-                if (string.IsNullOrWhiteSpace(msg))
+                var msg = GetErrorMessage(propertyName, attr);
+                if(msg != null)
                 {
-                    msg = string.Format(DataAnnotationConstants.DefaultMaxLengthErrorMsg, displayName, length);
+                    validations.Add("ng-maxlength-msg", msg);
                 }
-                validations.Add("ng-maxlength-msg", msg);
             }
             return validations;
         }
 
         protected Dictionary<string, object> SetMinLengthAAValidation(string propertyName, CustomAttributeData attr,
-            string length, string resourceNamespace = null, string resourceAssemblyName = null)
+            string length)
         {
 
             var validations = new Dictionary<string, object>();
@@ -154,12 +137,11 @@ namespace Intertech.Validation.Converters
             var displayName = GetNamedArgumentValue(propertyName, attr, DataAnnotationConstants.Display);
             if (!string.IsNullOrWhiteSpace(displayName))
             {
-                var msg = GetErrorMessage(propertyName, attr, resourceNamespace, resourceAssemblyName);
-                if (string.IsNullOrWhiteSpace(msg))
+                var msg = GetErrorMessage(propertyName, attr);
+                if(msg != null)
                 {
-                    msg = string.Format(DataAnnotationConstants.DefaultMinLengthErrorMsg, displayName, length);
+                    validations.Add("ng-minlength-msg", msg);
                 }
-                validations.Add("ng-minlength-msg", msg);
             }
             return validations;
          }

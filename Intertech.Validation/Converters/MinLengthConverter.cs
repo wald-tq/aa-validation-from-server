@@ -11,12 +11,12 @@ namespace Intertech.Validation.Converters
             return IsMatch<MinLengthAttribute>(attr);
         }
 
-        public Dictionary<string, object> Convert(string propertyName, CustomAttributeData attr, string resourceNamespace, string resourceAssemblyName)
+        public Dictionary<string, object> Convert(string propertyName, CustomAttributeData attr)
         {
             var validations = new Dictionary<string, object>();
             var length = GetConstructorArgumentValue(attr, 0);
 
-            return SetMinLengthAAValidation(propertyName, attr, length, resourceNamespace, resourceAssemblyName);
+            return SetMinLengthAAValidation(propertyName, attr, length);
         }
     }
 }

@@ -7,6 +7,6 @@ namespace Intertech.Validation.Converters
     {
         bool IsAttributeMatch(CustomAttributeData attr);
 
-        Dictionary<string, object> Convert(string propertyName, CustomAttributeData attr, string resourceNamespace, string resourceAssemblyName);
+        Dictionary<string, object> Convert(string propertyName, CustomAttributeData attr);
     }
 }

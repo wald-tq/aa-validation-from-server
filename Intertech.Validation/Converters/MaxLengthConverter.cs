@@ -11,13 +11,13 @@ namespace Intertech.Validation.Converters
             return IsMatch<MaxLengthAttribute>(attr);
         }
 
-        public Dictionary<string, object> Convert(string propertyName, CustomAttributeData attr, string resourceNamespace, string resourceAssemblyName)
+        public Dictionary<string, object> Convert(string propertyName, CustomAttributeData attr)
         {
             var validations = new Dictionary<string, object>();
 
             var length = GetConstructorArgumentValue(attr, 0);
 
-            return SetMaxLengthAAValidation(propertyName, attr, length, resourceNamespace, resourceAssemblyName);
+            return SetMaxLengthAAValidation(propertyName, attr, length);
         }
     }
 }

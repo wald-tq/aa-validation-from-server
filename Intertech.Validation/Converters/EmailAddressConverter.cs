@@ -12,10 +12,10 @@ namespace Intertech.Validation.Converters
             return IsMatch<EmailAddressAttribute>(attr);
         }
 
-        public Dictionary<string, object> Convert(string propertyName, CustomAttributeData attr, string resourceNamespace, string resourceAssemblyName)
+        public Dictionary<string, object> Convert(string propertyName, CustomAttributeData attr)
         {
             return SetRegularExpressionAAValidation(propertyName, attr, 
-                RegexConstants.Email, DataAnnotationConstants.DefaultEmailErrorMsg, resourceNamespace, resourceAssemblyName);
+                RegexConstants.Email);
         }
     }
 }

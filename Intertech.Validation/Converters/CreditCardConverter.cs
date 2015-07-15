@@ -12,10 +12,10 @@ namespace Intertech.Validation.Converters
             return IsMatch<CreditCardAttribute>(attr);
         }
 
-        public Dictionary<string, object> Convert(string propertyName, CustomAttributeData attr, string resourceNamespace, string resourceAssemblyName)
+        public Dictionary<string, object> Convert(string propertyName, CustomAttributeData attr)
         {
             return SetRegularExpressionAAValidation(propertyName, attr,
-                RegexConstants.CreditCard, DataAnnotationConstants.DefaultCreditCardErrorMsg, resourceNamespace, resourceAssemblyName);
+                RegexConstants.CreditCard);
         }
     }
 }

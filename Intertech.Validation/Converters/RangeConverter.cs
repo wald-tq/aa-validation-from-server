@@ -12,7 +12,7 @@ namespace Intertech.Validation.Converters
             return IsMatch<RangeAttribute>(attr);
         }
 
-        public Dictionary<string, object> Convert(string propertyName, CustomAttributeData attr, string resourceNamespace, string resourceAssemblyName)
+        public Dictionary<string, object> Convert(string propertyName, CustomAttributeData attr)
         {
             var validations = new Dictionary<string, object>();
             
@@ -26,15 +26,14 @@ namespace Intertech.Validation.Converters
                 var displayName = base.GetNamedArgumentValue(propertyName, attr, DataAnnotationConstants.Display);
                 if (!string.IsNullOrWhiteSpace(displayName))
                 {
-                    var msg = GetErrorMessage(propertyName, attr, resourceNamespace, resourceAssemblyName);
-                    if (string.IsNullOrWhiteSpace(msg))
+                    var msg = GetErrorMessage(propertyName, attr);
+                    if (msg != null)
                     {
-                        msg = string.Format(DataAnnotationConstants.DefaultRangeErrorMsg, displayName, minimum, maximum);
-                    }
-                    validations.Add("min-msg", msg);
+                        validations.Add("min-msg", msg);
+                        validations.Add("max-msg", msg);
 
+                    }
                     validations.Add("max", maximum);
-                    validations.Add("max-msg", msg);
                 }
             }
             return validations;

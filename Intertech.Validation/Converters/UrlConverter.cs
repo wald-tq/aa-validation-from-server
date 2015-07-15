@@ -12,10 +12,10 @@ namespace Intertech.Validation.Converters
             return IsMatch<UrlAttribute>(attr);
         }
 
-        public Dictionary<string, object> Convert(string propertyName, CustomAttributeData attr, string resourceNamespace, string resourceAssemblyName)
+        public Dictionary<string, object> Convert(string propertyName, CustomAttributeData attr)
         {
             return SetRegularExpressionAAValidation(propertyName, attr,
-                RegexConstants.Url, DataAnnotationConstants.DefaultUrlErrorMsg, resourceNamespace, resourceAssemblyName);
+                RegexConstants.Url);
         }
     }
 }

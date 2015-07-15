@@ -12,7 +12,7 @@ namespace Intertech.Validation.Converters
             return IsMatch<RequiredAttribute>(attr);
         }
 
-        public Dictionary<string, object> Convert(string propertyName, CustomAttributeData attr, string resourceNamespace, string resourceAssemblyName)
+        public Dictionary<string, object> Convert(string propertyName, CustomAttributeData attr)
         {
             var validations = new Dictionary<string, object>();
 
@@ -21,12 +21,11 @@ namespace Intertech.Validation.Converters
             var displayName = GetNamedArgumentValue(propertyName, attr, DataAnnotationConstants.Display);
             if (!string.IsNullOrWhiteSpace(displayName))
             {
-                var msg = GetErrorMessage(propertyName, attr, resourceNamespace, resourceAssemblyName);
-                if (string.IsNullOrWhiteSpace(msg))
+                var msg = GetErrorMessage(propertyName, attr);
+                if (msg != null)
                 {
-                    msg = string.Format(DataAnnotationConstants.DefaultRequiredErrorMsg, displayName);
+                    validations.Add("required-msg", msg);
                 }
-                validations.Add("required-msg", msg);
             }
             return validations;
         }

@@ -10,7 +10,19 @@ namespace Intertech.Validation
     public class ValidationHelper
     {
         private static List<IValidationConverter> _converters;
+
         public List<IValidationConverter> Converters { get { return _converters; } }
+
+        public static List<IErrorMessageFormatter> _errorMessageFormatter {
+            get 
+            { 
+                return BaseValidationConverter._errorMessageFormatter; 
+            }
+            set
+            {
+                BaseValidationConverter._errorMessageFormatter = value;
+            }
+        }
 
         /// <summary>
         /// Constructor that initializes the list of IValidationConverters.
@@ -38,6 +50,15 @@ namespace Intertech.Validation
                     }
                 }
             }
+            if (_errorMessageFormatter == null)
+            {
+                _errorMessageFormatter = new List<IErrorMessageFormatter> {
+                    new AttributeErrorMessageFormatter(),
+                    new ResourceErrorMessageFormatter(),
+                    new DefaultErrorMessageFormatter()
+                };
+            }
+
         }
 
         /// <summary>
@@ -100,7 +121,7 @@ namespace Intertech.Validation
                             var converter = _converters.FirstOrDefault(vc => vc.IsAttributeMatch(attr));
                             if (converter != null)
                             {
-                                var ret = converter.Convert(prop.Name, attr, parms.ResourceNamespace, parms.ResourceAssemblyName);
+                                var ret = converter.Convert(prop.Name, attr);
                                 propertyValidations = propertyValidations.Concat(ret).ToDictionary(x => x.Key, x => x.Value);
                             }
                         }
