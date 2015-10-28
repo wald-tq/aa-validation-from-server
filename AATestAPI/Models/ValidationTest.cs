@@ -16,7 +16,7 @@ namespace AATestAPI.Models
         [Phone]
         public string Phone { get; set; }
 
-        [Url]
+        [Url(ErrorMessage="Website is not a valid URL.")]
         public string Website { get; set; }
 
         [CreditCard]
