@@ -1,9 +1,23 @@
+#Notes for this Repository
+This is a fork of the original Validation from Intertech: [Intertech/aa-validation-from-server](https://github.com/IntertechInc/aa-validation-from-server)
+
+The fork was done for following reasons:
+
+* Use a JSON serializer rather than creating the JSON string by hand. This results in easier extensibility.
+* Support for hierararchical viewmodels
+* Configurable and extendable creation of the errormessages
+
+You can watch the state of the integration in the parent project here:
+[Issue 11](https://github.com/IntertechInc/aa-validation-from-server/issues/11)
+
+To build this NuGet Package see [development.md](development.md).
+
 #Validation from Server for Angular Agility
 
 Angular Agility form validation that is retrieved from Web API and DTO classes 
 in the form of the [JSON object that AA expects](https://github.com/AngularAgility/AngularAgility/wiki/External-Form-Configuration).
 
-[NuGet Package](https://www.nuget.org/packages/Intertech.Validation.AA/)
+[Official NuGet Package](https://www.nuget.org/packages/Intertech.Validation.AA/)
 
 ##Blog
 [Angular Agility: AngularJS Validation Pulled from Web API](http://www.intertech.com/Blog/angular-agility-angularjs-validation-pulled-from-web-api/)
