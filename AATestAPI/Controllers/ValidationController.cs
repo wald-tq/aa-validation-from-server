@@ -16,6 +16,11 @@ namespace AATestAPI.Controllers
         [Route("GetValidations")]
         public IHttpActionResult GetValidations(string dtoObjectName, string jsonObjectName)
         {
+            ValidationHelper._errorMessageFormatter = new List<IErrorMessageFormatter> {
+                new DefaultErrorMessageFormatter(),
+                new AttributeErrorMessageFormatter(),
+                // new ResourceErrorMessageFormatter{ResourceNamespace = "Namespace", ResourceAssemblyName = "Assembly"},
+            };
             var valHelper = new ValidationHelper();
             object jsonObject = valHelper.GetValidations(dtoObjectName, "AATestAPI.Models", "AATestAPI");
 

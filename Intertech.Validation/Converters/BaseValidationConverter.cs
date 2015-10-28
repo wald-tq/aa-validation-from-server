@@ -109,7 +109,7 @@ namespace Intertech.Validation.Converters
         }
 
         protected Dictionary<string, object> SetMaxLengthAAValidation(string propertyName, CustomAttributeData attr,
-            string length, string resourceNamespace = null, string resourceAssemblyName = null)
+            string length)
         {
             var validations = new Dictionary<string, object>();
             validations.Add("ng-maxlength", length);
